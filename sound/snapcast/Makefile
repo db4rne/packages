@@ -9,22 +9,28 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME := snapcast
 PKG_VERSION := 0.24.0
-PKG_RELEASE := $(PKG_SOURCE_VERSION)
+PKG_RELEASE := 1
+PKG_MAINTAINER := Arne Zachlod <arne@nerdkeller.org>
 PKG_USE_MIPS16 := 0
+PKG_LICENSE := GPL-3.0-or-later
+PKG_LICENSE_FILE := LICENSE
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/badaix/snapcast.git
-PKG_SOURCE_VERSION:=v0.24.0
-PKG_BUILD_DIR:=$(BUILD_DIR)/snapcast-$(PKG_VERSION)
+PKG_SOURCE_VERSION:=v$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
+
+CMAKE_OPTIONS += -DBUILD_WITH_PULSE=OFF
 
 define Package/snapcast/Default
 	SECTION := sound
 	CATEGORY := Sound
 	TITLE := Synchronous multiroom audio player
-	DEPENDS := +libstdcpp +libavahi-client +libatomic +libogg +libflac +libopus +boost
+	DEPENDS := +libstdcpp +libavahi-client +libatomic +libogg +libflac +libopus +boost \
+		+AUDIO_SUPPORT:alsa-lib +libsoxr
 	URL := https://github.com/badaix/snapcast
 endef
 
@@ -54,7 +60,7 @@ endef
 define Package/snapclient
 	$(call Package/snapcast/Default)
 	TILE += Snapclient
-	DEPENDS += +AUDIO_SUPPORT:alsa-lib +libvorbisidec +libsoxr
+	DEPENDS += +libvorbisidec
 	HIDDEN := 1
 endef
 
